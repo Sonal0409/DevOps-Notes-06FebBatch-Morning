@@ -1,0 +1,218 @@
+1. Become a root user
+
+sudo su -
+
+2. Check git is installed or not
+
+git --version
+
+3. Install git
+
+yum install git -y
+
+=============================
+
+Demo: Add new files in Local repository using GIT
+
+
+Step 1: Create a working directory and add some file in it
+
+mkdir myfiles
+cd myfiles
+touch index1.html touch index2.html
+
+Step 2: Create a local repo
+
+# git init
+
+# ls -al  ==> you will see the .git folder
+
+
+Step 3: Add file to stagging area:
+
+ git add index1.html
+
+Step 4: Commit the files that are stagged to Local repo
+
+Untracked files cannot be commited to local repo
+
+git commit -m " added file"
+
+git ls-files
+
+
+=============================
+
+Check the log in git
+
+
+To check the commit id:
+
+
+# git log
+
+# git log --oneline
+=========================
+
+Git config:
+
+there are 2 vairable that we have to set in GIT
+
+user.name
+user.email
+
+for this we have to use a git config
+
+git config --local user.name sonal
+
+git config --global user.name sonal
+
+git config --system user.name sonal
+
+Demo:
+
+git config --global user.email mittal.sonal04@gmail.com
+
+git config --global user.name sonal
+
+
+Assignment:
+==================
+
+Cretae a LR and do local config
+
+git config --local user.name sonal
+
+Find if the config is set in following file
+
+they are presnr tin file:
+
+# cat .git/config
+
+Step 2:
+
+git config --global user.name sonal
+
+Global configuration:
+
+# cat ~/.gitconfig
+
+Step 3:
+
+git config --system user.name sonal
+
+
+system configuration
+
+# cat /etc/gitconfig
+
+
+Step 4: edit configuration
+
+git config --global --edit
+
+===================================================
+
+We will take an exisitng file (file that has been commited to local repo)
+
+Make changes to it
+
+save it and see the git status
+
+2 methods to commit the modified files
+
+method 1:
+
+vim index1.html
+
+press i
+
+inster data
+
+press ESC key
+
+:wq! 
+
+press enter
+
+
+# git status
+
+# git commit -a -m "modified file"
+
+method2:
+=============
+
+git add .
+
+git commit -m "modification"
+
+
+
+
+
+
+===========================
+
+
+Reverting in git
+
+
+Reverting always works on a commit id
+
+it reverts whatever happened in the commit id to its previous state
+
+and also generate a new revert commit id
+
+
+Step 1:
+
+Delete a file form local repo and working directory
+
+# git rm index1.html
+
+becuase you did a delete--> change happned on repo --> we have to commit it
+
+# git commit -a -m "deleted file"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
