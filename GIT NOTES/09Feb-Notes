@@ -1,0 +1,217 @@
+ .gitignore concept
+==========================================
+It is a concept where you can ask to git to ignore certain files  from your working directory.
+
+In the working directory you will create few file:
+
+touch file.xml config.xml data.txt
+
+If your will give git status command, git will tell these files are untracked
+
+But we don’t want these files to be version controlled
+
+In this case, you will create a .gitignore file [ name of file will be same and it has no extension]
+
+Open this file and add the names of all the files or directories, save the file
+
+And git will not track the files names & directories mentioned in .gitignore file
+
+Note: This scenario is applicable to files that are with status as untacked.
+
+==============================================
+ Stashing in GIT
+*******************************
+Statshing is done in Local repo
+Which is applied only to the files that are tracked by git and have incomplete changes or modifications
+
+$ git ls-files
+
+Take a file that is already tracked by git
+
+Make some modifications to it
+
+$  git status
+
+Execute the stash command
+$ git stash
+
+Changes will be stashed in .git folder /refs/stash file
+
+List all stash
+
+$ git stash list
+
+Stash files using interactive mode
+
+$ git stash -p
+
+See what is saved in the stash
+
+$ git show stash@{0}
+
+
+Delete the stash and move the changes back to WD
+
+$ git stash pop stash@{0}
+
+Keep the stash and move changes back to WD
+
+$ git stash apply stash@{0}
+======================================================
+Branching & Merging
+
+
+Scenario 1:  Create branches in Local repo
+
+> Command to check branch in Local repo
+	$ git branch
+
+> Create a new branch in Local
+
+	$ git branch f1
+
+> Switch to the branch 
+
+      $ git checkout f1
+
+> Add new file and commit on the branch f1
+	$ touch feature1
+	$ git add .
+	$ git commit -m “added onf1”
+
+	$ git log –oneline  // check the new commit
+
+> Switch back to master branch and compare the 2 branches
+
+> Compare the 2 branches:
+
+git diff --name-status master..f1
+
+OR
+
+Git diff master..f1
+
+
+
+
+
+
+
+
+
+Scenario 2:
+
+> Command to create a new branch as well as switch to new branch
+
+	$ git checkout -b f2
+
+> Add new file and commit on the new branch
+> Switch back to master
+
+Scenario 3:
+
+> Always switch to the branch where you want to merge the files from feature branch
+
+	$ git checkout master
+
+> Merge the changes from new branch to master branch
+
+	$ git merge <sourcebranch> <destinationbranch>
+
+	$ git merge f1 master
+
+> Check the commit history on master
+
+Scenario 4:
+
+Change the name of the branch
+
+	$ git branch -M f1 dev
+
+
+Delete a branch in local:
+
+Make sure , you are not on the branch that is to be deleted
+
+First checkout to master branch
+	$ git checkout master
+
+	$ git branch -D f2
+
+
+List of branches that have not been merged to master
+
+
+git branch --no-merged
+
+List of branches that have been merged to master
+
+git branch --merged
+================================================
+
+Rebasing in GIT
+
+Rebasing is merging strategy that is always applied on a feature branch
+It is never applied on Master branch
+
+In case rebase the commit history on your git repository is re-arranged on the feature branch
+
+The commit history will integrated as a patch
+ >  all the commit of master branch (base branch)
+> than all the new commits of done on feature branch
+
+Demo:
+
+> Checkout to feature branch and create 2  new commits on the feature branch
+
+vim benchmarks.rb
+git commit -a -m "modified new file on fetaure branch"
+
+Make second commit
+vim benchmarks.rb
+git commit -a -m "modified new file on fetaure branch"
+
+
+> Checkout to master branch and make new commits on the master branch
+
+touch file.rb
+git add .
+ git commit -m " done on master"
+
+> We are going to switch to feature branch, on the feature I want to merge the commits of 2 branches in a linear workflow , i.e we should have all commits of master branch available and then commits of feature branch should be there
+
+$ git checkout feature
+
+$ git rebase master
+
+ we should have all commits of master branch available and then new commits of feature branch should be there
+
+
+
+
+
+
+
+
+
+
+
+Scenario 2: Tags in GIT
+Light weight tags:
+ In this method the tag is directly appended to the latest Head commit id
+$ git tag release1
+To see all tags on the local repo:
+
+  $ git tag --list
+
+To see tag associate dto commit id
+$ git log –oneline
+
+Output:
+
+d3e9a9d (HEAD -> feature, tag: release1) modified new file on fetaure branch
+db50ea3 modified new file on fetaure branch
+a29fafc done
+e54ddb6 done
+0e6bac9 done on feature branch
+
