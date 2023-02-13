@@ -1,0 +1,123 @@
+
+Create a Remote repositories
+> Login to github
+> click on New button to create a remote repo
+> Name to the repository
+> select public repo
+> click on Create repository
+
+The URL of my github repo is : https://github.com/Sonal0409/myproject206Aug.git
+
+Create a Personal Access token on github
+It is a authentication method which very secure
+This is used whenever we have to push files or changes form Local to remote
+There is not concept of using password, instead we have to use Personal access token in git locally
+
+Demo:
+
+Go to settings of github → on the left side → go to developer settings → go to Personal Access tokens → Generate New token
+Note→ give a name to the token
+Expiration -> 30 days
+Select scope : repo (1 checkbox) 
+Click on generate token
+
+Make sure to copy your personal access token now. You won’t be able to see it again! 
+
+Connect Local repo to remote repo
+	Go to git and execute this command
+
+  $ git remote add origin https://github.com/Sonal0409/myproject206Aug.git
+
+Execute the command to check local and remote repo is set:
+
+  $ git remote -v
+
+To remove local repo and remote repo connection:
+
+$ git remote rm origin
+
+Command that can be used to update existing remote origin:
+
+$ git remote set-url origin <url
+Pushing the file to remote from local repo
+
+$ git push origin master
+
+Username : <guthubusername>
+Password: give your personal access token
+
+Note: you will not be able to see the token text on screen.. Go ahead and press enter key
+
+Day 4: Agenda:
+*********************************************************
+
+
+Adding collaborators to remote repository, so other github user can push into my repository from his local repo
+
+Pulling file from remote github repo  to local repo
+
+In your git hub repo , add some new files:
+
+And commit them in github
+
+Pull those files to your local
+
+$ git pull origin master
+Pulling a specific file form a remote repo to local
+
+Create 2 new files in github
+
+In the local git CLI
+
+Execute the command:
+
+$ git fetch origin master
+
+⇒ this command will only fetch the new changes from the remote repo and commits
+⇒ it will not merge with WD & LR
+
+For your information - no need to execute:
+
+How to Check what has been fetched from remote repo
+
+cd .git
+
+cat FETCH_HEAD
+
+You will a single commit with remote files information in it
+
+cd ..
+
+$  git diff 2830d1093a8f519b68c929cb4501ad1c247c9fe3
+
+This will show you, which files are not in your local, but are there in remote
+Diff ⇒ difference
+In this case, diff with commit id , will tell us what has been fetched from remote repo
+
+In order to merge a single file form remote to local repo
+
+
+Execute this:
+
+$ git checkout origin/master <filename>
+
+$  git checkout origin/master fetchfile1
+
+$ git status ⇒ file will be staged
+
+$ git commit -m “message”
+
+
+Clonign a repo
+
+git clone repoPath
+
+========================
+
+Fork a repo
+Forking is copying the remote repo from github account to another github account
+
+Copying repository remote to remote
+
+A fork is a copy of a repository. Forking a repository allows you to freely experiment with changes without affecting the original project.
+
