@@ -1,0 +1,73 @@
+
+Build Tools - Maven
+
+Maven very powerfull tool
+
+Open source tool
+
+Entire source code can be managed using maven
+
+Compile your code in to machine understandable language
+
+To exeucte your unit, functional test cases
+
+Maven to package your code
+
+as well as we can review the code
+
+
+maven to perform code coverage
+
+at its heart it is a plugin based tool
+
+Compile your code
+exeucte your unit test
+package
+code review
+coverage
+
+plugin in maven are of 2 types
+
+1 : Build plugins : perform the core activites of build
+
+
+Compile your code        ----> COMPILER plugin
+exeucte your unit test   ----> SUREFIRE plugin
+package                  ----> PACKAGE plugin
+
+2. Review plugins : plugins used for validation and for generating reports
+
+code review              ----> pmd plugin
+coverage                 ----> cobertura plugin
+
+
+Execute the plugins -->
+
+every plugin provides a goal
+
+GOAL= command
+
+ COMPILER ----> goal ---> compile
+
+ SUREFIRE -----> goal ----> test
+
+ PACKAGE plugin -> goal ---> package
+
+
+ for your information:
+
+pmd plugin  ---> goal --> pmd:pmd
+
+cobertura plugin ----> goal ---> cobertura:cobertura
+
+maven plugins will always generate reports in xml,txt,html format
+
+
+Every maven project configurations will be available in a file called as POM.xml
+
+ all dependencies need for a code to work
+ and information of all the plugin needed to build the code will be in the pom file
+
+Source code repository will be for java code :
+
+https://github.com/Sonal0409/DevOpsCodeDemo
