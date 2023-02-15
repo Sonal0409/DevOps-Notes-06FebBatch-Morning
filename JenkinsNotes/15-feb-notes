@@ -1,0 +1,262 @@
+Agenda:
+****************
+Maven - features, commands of maven, plugins
+
+Plugin Management
+Configure Build tools in jenkins
+Download plugins
+Build pipeline - Upstream & downstream pipeline
+
+
+
+Jenkins--> Manage Jenkins-->Global Tool configuration
+
+
+
+Under GIT==> leave it same 
+
+Under maven ==> lets install it automatically
+Type mymaven and check the install automatically box.
+Save the changes
+
+
+****************************************
+
+CREATION OF COMPILE JOB
+***********************************
+
+1. new Job --1.complie-->freestyle project
+2. Source code management --> select git
+--->give git path ===> https://github.com/Sonal0409/DevOpsCodeDemo.git
+
+3. build ==> select invoke top level maven targets
+   select maven version===> mymaven
+    goal ==> compile
+4. save ==> build now 
+So all the compiled files will be present at this location
+==> look for this line in console output at the end on jenkins
+Compiling 13 source files to /var/lib/jenkins/workspace/compile1/target/classes
+
+5. Go to workspace on the left side of jenkins Job compile
+In the folder go to ==> target folder==> go to classes/com/edurekademo
+==> click on edurekademo==> got to utilities==> all class files will be there which have recently been compiled.
+******************************
+2nd JOB ==>Code Review
+*********************
+
+Jenkins--> new item--> Name= code Review==> freestyle project
+==> source codemanagement==>select git==> 
+give git repo name https://github.com/Sonal0409/DevOpsClassCodes
+
+Step 2: build ==> invoke top level maven target==>
+ select maven version==>mymaven ==> goal = pmd:pmd
+
+save==> build now
+==> click on build number and see the console
+
+Goto Workspace on the left side of jenkins Job code review
+In the folder go to ==> target folder ==> you will find pmd.xml file.
+
+CONVERT FILE TO TREND REPORT
+*******************************
+ manage jenkins--> manage plugins--> available --> Search for warning next gen plugin--> install it.
+Retsrat in case plugin fails installation.
+
+Now go to the job Code Review==> go to post build actions ==> select recordcomplier warnings and static result analysis
+
+Under tool ==> select PMD
+under report file format ==> give path of pmd.xml file ie:  target/pmd.xml
+or as mentioned in message below : copy **/pmd.xml  ( no quotes)
+
+Save the file and build now.
+
+After the build is successfull, you will see PMD Warnings
+
+So you will see 12 new warning have been generated on the code.
+Scroll down 
+Under package click on first one to check warnings.
+
+*********************************
+JOB3: Testing --Unit Test report
+********************************
+
+1. jenkins--> new item--> Name= 3.unitTest==> freestyle project
+==> source codemanagement==>select git==> give git repo name 
+https://github.com/Sonal0409/DevOpsCodeDemo.git
+
+2. build ==> invoke top level maven target==> select maven version==>mymaven ==> goal = test
+
+3. Save and Build now.
+
+4. Check the workspace
+
+5. surefire-reports will be present
+
+But we cannot understand them easily. So lets generate understandable reports by using Junit reports option under post build actions
+
+6. Go back to job==> post build actions==> select junit test result job
+==> give target/surefire-reports/*.xml  ===>under test report xml
+This is path where xml files are there.
+Here *.xml is as we want to use all the xml files
+
+7. Save and build again
+
+Go to build number ===> on left side you will see Test Result 
+Click on it and you can see all pass and fail details of the tests
+
+**************************
+JOB4 : Code Coverage
+************************
+
+1. Go to jenkins--> new item--> Name= 4.CodeCoverage==> freestyle project
+==> source codemanagement==>select git==> give git repo name https://github.com/Sonal0409/DevOpsClassCodes
+
+2.  build ==> invoke top level maven target==> select mymaven
+    goal = cobertura:cobertura -Dcobertura.report.format=xml
+
+3.==> save==> build now
+==> click on build number and see the console
+
+4. go to Workspace ==> target/site/cobertura/coverage.xml  
+
+The xml file will be there, But we cannot understand them easily. So lets generate understandable reports by downloading cobertura plugin
+
+Go to manage jenkins--> manage plugins-->Available→ cobertura --> install it
+
+Go back to the job--> post build actions--> select publish cobertura coverage report
+Under cobertura xml pattern give ==> target/site/cobertura/coverage.xml   ==> you can take the path from below displayed text.
+
+Save and build again
+Click build number ==> on left side you will find Coverage Report==> click on it ==> we cna see the coverage report.
+
+**********************************
+Job5 Package Job
+***************************
+
+Go to jenkins--> new item--> Name= Package==> freestyle project
+==> source codemanagement==>select git==> give git repo name https://github.com/Sonal0409/DevOpsClassCodes
+ 
+build ==> invoke top level maven target==>mymaven
+
+ goal = package
+
+==> save==> build now
+==> click on build number and see the console
+
+==> go to workspace ==> target/addressbook.war
+
+
+**************
+Connecting all the 5 jobs so that each job can be triggered:
+
+
+Go to manage plugins → available section
+
+Search for build pipeline plugin
+
+Click on the checkbox and click on Install without restart
+
+
+Plugin will be installed.
+
+Lets build the pipeline:
+
+
+
+*****************
+
+Day4:
+********************
+
+******************************
+Pipeline as a code
+**************************
+Lets create a pipeline using code:
+
+
+Create a new job ==> select project as pipeline
+
+
+pipeline{
+    
+    tools{
+        jdk 'myjava'
+        maven 'mymaven'
+    }
+    
+    agent any
+    
+    stages{
+
+        stage('1.CloneRepo')
+        {
+           
+            steps{
+                git 'https://github.com/Sonal0409/DevOpsCodeDemo.git'
+            }
+        }
+        stage('2.Compile the code')
+        {
+             
+            steps{
+             sh 'mvn compile'
+            }
+        }
+        stage('3.Code Review'){
+            steps{
+            sh 'mvn pmd:pmd'
+            }
+        }
+        
+        stage('4.Unit Testing'){
+            steps{
+                sh 'mvn test'
+            }
+            post{
+                success{
+                    junit 'target/surefire-reports/*.xml'
+                }
+            }
+        }
+        stage('5.Code Coverage'){
+            steps{
+            sh   'mvn cobertura:cobertura -Dcobertura.report.format=xml'
+            }
+            post{
+                success{
+                    cobertura autoUpdateHealth: false, autoUpdateStability: false, coberturaReportFile: 'target/site/cobertura/coverage.xml', conditionalCoverageTargets: '70, 0, 0', failUnhealthy: false, failUnstable: false, lineCoverageTargets: '80, 0, 0', maxNumberOfBuilds: 0, methodCoverageTargets: '80, 0, 0', onlyStable: false, sourceEncoding: 'ASCII', zoomCoverageChart: false
+                }
+            }
+        }
+        stage('6.Package'){
+            steps{
+                sh 'mvn package'
+            }
+        }
+    }
+}
+
+
+Day 5: Agenda:
+
+> Jenkinsfile
+
+It is a simple text file with no extension
+This file contains declarative pipeline code for CI/CD pipeline
+The name of this file is always Jenkinsfile
+This will is maintained in the root directory of your project repo on SCM tool
+Every team member can now make changes to the pipeline code without logging on the jenkins server.
+In the github we can also maintain every version of pipeline code
+We write the pipeline code in IDE and push the Jenkinsfile in the repository
+In jenkins you will create a job, that will fetch the Jenkinsfile and jenkins will execute the pipeline for you.
+
+Demo:
+
+Click on new Item → give the job name as JenkinsfileDemo → Select pipeline project→ press OK
+In the job template → click on pipeline tab → select the dropdown option as Pipeline script from SCM
+Select SCM as → git
+Repository URL? ⇒ https://github.com/Sonal0409/DevOpsCodeDemo.git
+
+We will also add a trigger → Go to Build triggers tab above→ POLL SCM → * * * * *
+
+So that if there is any commit, my pipeline should get executed everytime.
