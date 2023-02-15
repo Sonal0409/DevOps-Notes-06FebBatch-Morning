@@ -104,30 +104,6 @@ Here *.xml is as we want to use all the xml files
 Go to build number ===> on left side you will see Test Result 
 Click on it and you can see all pass and fail details of the tests
 
-**************************
-JOB4 : Code Coverage
-************************
-
-1. Go to jenkins--> new item--> Name= 4.CodeCoverage==> freestyle project
-==> source codemanagement==>select git==> give git repo name https://github.com/Sonal0409/DevOpsClassCodes
-
-2.  build ==> invoke top level maven target==> select mymaven
-    goal = cobertura:cobertura -Dcobertura.report.format=xml
-
-3.==> save==> build now
-==> click on build number and see the console
-
-4. go to Workspace ==> target/site/cobertura/coverage.xml  
-
-The xml file will be there, But we cannot understand them easily. So lets generate understandable reports by downloading cobertura plugin
-
-Go to manage jenkins--> manage plugins-->Available→ cobertura --> install it
-
-Go back to the job--> post build actions--> select publish cobertura coverage report
-Under cobertura xml pattern give ==> target/site/cobertura/coverage.xml   ==> you can take the path from below displayed text.
-
-Save and build again
-Click build number ==> on left side you will find Coverage Report==> click on it ==> we cna see the coverage report.
 
 **********************************
 Job5 Package Job
