@@ -1,0 +1,47 @@
+Create a pipeline job and give name as CICDpipeline
+
+
+pipeline{
+
+tools{
+maven 'mymaven'
+}
+agent any
+
+stages{
+ stage ('clone repo')
+ { 
+ 
+ steps{
+ 
+  git 'https://github.com/Sonal0409/DevOpsClassCodes.git'
+  }
+  }
+
+          stage('Package'){
+              agent any
+              steps{
+                  sh 'mvn package'
+              }
+          }
+          stage('Deploy'){
+      agent any
+      steps{
+        sh label: '', script: '''rm -rf mydockerfile
+mkdir mydockerfile
+cd mydockerfile
+cp /var/lib/jenkins/workspace/CICDpipeline/target/addressbook.war .
+touch dockerfile
+cat <<EOT>> dockerfile
+From tomcat:9
+ADD addressbook.war /usr/local/tomcat/webapps
+EXPOSE 8080
+CMD ["catalina.sh", "run"]
+EOT
+sudo docker build -t myimage:$BUILD_NUMBER .
+sudo docker run -itd -P myimage:$BUILD_NUMBER'''
+      }
+    }
+
+      }
+}
