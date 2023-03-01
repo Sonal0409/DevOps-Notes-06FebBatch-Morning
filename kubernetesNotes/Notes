@@ -1,0 +1,289 @@
+Kubernetes Notes:
+=======================
+
+1. Kubectl get nodes
+
+2. kubectl get nodes -o wide
+
+Object 1 : POD
+=============================
+Create a file Pod-defitnion.yml
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: pod1
+ labels:
+  app: java
+  author: sonal
+spec:
+ containers:
+  - image: nginx
+    name: c1
+
+
+# kubectl create -f Pod-defitnion.yml
+
+
+# kubectl get pods
+
+# kubectl describe pod pod1 | less
+
+
+Object 2 : ReplicasSet
+===========================
+
+
+
+ReplicaSet
+A ReplicaSet's purpose is to maintain a stable set of replica Pods running at any given time.
+
+As such, it is often used to guarantee the availability of a specified number of identical Pods.
+
+A ReplicaSet is defined with fields, including
+
+a selector that specifies how to identify Pods it can acquire,
+a number of replicas indicating how many Pods it should be maintaining,
+and a pod template specifying the data of new Pods it should create to meet the number of replicas criteria.
+A ReplicaSet then fulfills its purpose by creating and deleting Pods as needed to reach the desired number. When a ReplicaSet needs to create new Pods, it uses its Pod template.
+
+LAB Execution Steps:
+Step1:
+
+Delete all exisitng Pods
+kubectl delete pods --all
+
+Step2:
+
+Create Replicas using ReplicaSet YAML file
+kubectl create -f https://raw.githubusercontent.com/Sonal0409/Container-Orchestration-using-Kubernetes/main/Day2-Notes/ReplicaSet-Demo/ReplicaSet.yml
+
+Step3:
+
+Validate the creation of Replicas
+kubectl get all
+
+kubectl get pods
+
+kubectl get pods -o wide
+
+Scale up the replicas for the current replicaSet
+kubectl scale --replicas=5 replicaset myrs
+
+kubectl get pods -o wide
+
+Scale down the replicas for the current replicaSet
+kubectl scale --replicas=2 replicaset myrs
+
+kubectl get pods -o wide
+
+Delete Replicaset
+kubectl delete replicaset myrs
+
+==================================================================
+
+Lab execution steps:
+Execute below steps:
+
+Create the deployment object and Nodeport service:
+kubectl create -f https://raw.githubusercontent.com/Sonal0409/Container-Orchestration-using-Kubernetes/main/Day2-Notes/Deployment/deployment.yml
+
+Validate:
+kubectl get all
+
+kubectl get deployment kubeserve -o wide
+
+kubectl set image deploy kubeserve app=leaddevops/kubeserve:v2
+
+kubectl rollout status deploy kubeserve
+
+kubectl get all
+
+kubectl get deployment kubeserve -o wide
+
+kubectl set image deploy kubeserve app=leaddevops/kubeserve:v3
+
+lets rollback to older version of image:
+kubectl rollout undo deploy kubeserve
+
+Delete the deployment:
+kubectl delete deploy kubeserve
+
+kubectl get all
+
+
+
+===================================================
+
+Step 1: Run the below pod with multiple containers:
+
+kind: Pod  # kubectl api-resources
+apiVersion: v1
+metadata:
+  name: multi-cont-pod1
+  namespace: default
+  labels:  # are mandatory # helps to indentify a group of pods in cluster # in kube if you do not provide a label kube will assing one automatically
+    role: dev  # here both key & value are your choice
+spec:
+  #restrtPolicy: Always # Never
+  containers:
+    - name: cont1
+      image: httpd
+    - name: cont2
+      image: nginx
+    - name: ucont
+      image: ubuntu
+
+
+# kubectl create -f multi-containerpod.yml
+# kubectl get pods
+
+You will see that only one container is up and rinning, 2 containers have failed
+
+# kubectl describe pod multi-cont-pod1
+
+You will see that cont 2 and ucont have failed and kubernetes(pod) tried to 
+restart the containers again and again due to restart policy as Always
+
+Now check the logs for error of cont2
+
+kubectl logs multi-cont-pod1 -c cont2
+
+Now check logs for error of ucont
+
+No logs will be there
+
+**************************************
+
+Now lets correct the YAMl
+
+
+Instead of nginx, lets take tomcat image and second container as it has different port number
+
+and lets pass a command with ubuntu container, that will invoke a process in the container
+
+command: ["bash", "-c", "sleep 6000"]  
+
+Invoke the bash shell process and run a specific command as sleep 6000, 
+which means we are running a specific sleep process in the ubuntu container this time
+
+
+Create a new YAML file:
+
+# vim multi-containerpod2.yml
+
+kind: Pod  # kubectl api-resources
+apiVersion: v1
+metadata:
+  name: multi-cont-pod2
+  namespace: default
+  labels:  # are mandatory # helps to indentify a group of pods in cluster # in kube if you do not provide a label kube will assing one automatically
+    role: dev  # here both key & value are your choice
+spec:
+  #restrtPolicy: Always # Never
+  containers:
+    - name: cont1
+      image: httpd
+    - name: cont2
+      image: tomcat
+    - name: ucont
+      image: ubuntu
+      command: ["bash", "-c", "sleep 6000"]
+
+
+# kubectl create -f multi-containerpod2.yml
+
+# kubectl get pods
+
+===================================================
+
+Springboot and Mongo DB deployment:
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mongodb
+  name: mongodb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mongodb
+    spec:
+      containers:
+       - image: lerndevops/samples:mongodb
+         name: mongo
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+   name: mongo
+spec:
+   type: ClusterIP
+   ports:
+    - port: 27017
+      targetPort: 27017
+   selector:
+     app: mongodb
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - image: lerndevops/samples:springboot-app
+        name: springboot-app
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: springboot-app-svc
+spec:
+  type: NodePort
+  ports:
+   - port: 80
+     targetPort: 8080
+  selector:
+    app: myapp
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
